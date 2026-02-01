@@ -13,7 +13,7 @@ REPO_ROOT = Path(__file__).resolve().parent
 ARTIFACTS_DIR = Path("/mnt/c/Users/hound/Pictures/Aseprite Factory")
 LUA_DIR = REPO_ROOT / "lua"
 
-SUPPORTED_TASKS = {"sprite_placeholder", "tileset_placeholder"}
+SUPPORTED_TASKS = {"sprite_placeholder", "tileset_placeholder", "character_base"}
 JOB_ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]+$")
 
 
@@ -161,12 +161,50 @@ class TilesetPlaceholderCommand(BaseCommand):
         }
 
 
+class CharacterBaseCommand(BaseCommand):
+    @property
+    def lua_script(self) -> Path:
+        return LUA_DIR / "character_base.lua"
+
+    def script_params(self) -> Dict[str, str]:
+        params = super().script_params()
+        job_params = self.context.job.get("params", {})
+        
+        # Pass through character-specific params
+        params["palette"] = str(job_params.get("palette", "knight_default"))
+        params["body_type"] = str(job_params.get("body_type", "medium"))
+        params["facing"] = str(job_params.get("facing", "side"))
+        
+        # Convert animations list to comma-separated string
+        animations = job_params.get("animations", ["idle"])
+        if isinstance(animations, list):
+            params["animations"] = ",".join(animations)
+        else:
+            params["animations"] = str(animations)
+        
+        return params
+
+    def meta_payload(self) -> Dict[str, object]:
+        job_params = self.context.job.get("params", {})
+        animations = job_params.get("animations", ["idle"])
+        return {
+            "job": self.context.job,
+            "sprite_size": [16, 16],
+            "palette": job_params.get("palette", "knight_default"),
+            "body_type": job_params.get("body_type", "medium"),
+            "animations": animations,
+            "facing": job_params.get("facing", "side"),
+        }
+
+
 def build_command(context: CommandContext) -> BaseCommand:
     task = context.job["task"]
     if task == "sprite_placeholder":
         return SpritePlaceholderCommand(context)
     if task == "tileset_placeholder":
         return TilesetPlaceholderCommand(context)
+    if task == "character_base":
+        return CharacterBaseCommand(context)
     raise JobError(f"Unsupported task: {task}")
 
 

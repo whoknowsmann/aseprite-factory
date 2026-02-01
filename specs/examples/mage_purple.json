@@ -1,0 +1,11 @@
+{
+  "job_id": "mage_purple",
+  "task": "character_base",
+  "output_basename": "mage_purple",
+  "params": {
+    "palette": "mage_purple",
+    "body_type": "small",
+    "animations": ["idle", "walk", "attack"],
+    "facing": "side"
+  }
+}

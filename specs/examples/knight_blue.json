@@ -1,0 +1,11 @@
+{
+  "job_id": "knight_blue",
+  "task": "character_base",
+  "output_basename": "knight_blue",
+  "params": {
+    "palette": "knight_default",
+    "body_type": "medium",
+    "animations": ["idle", "walk"],
+    "facing": "side"
+  }
+}
