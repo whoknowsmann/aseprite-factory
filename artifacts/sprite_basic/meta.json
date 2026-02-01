@@ -1,0 +1,19 @@
+{
+  "frame_count": 5,
+  "job": {
+    "job_id": "sprite_basic",
+    "output_basename": "output",
+    "params": {},
+    "task": "sprite_placeholder"
+  },
+  "tags": {
+    "idle": {
+      "from": 1,
+      "to": 1
+    },
+    "walk": {
+      "from": 2,
+      "to": 5
+    }
+  }
+}

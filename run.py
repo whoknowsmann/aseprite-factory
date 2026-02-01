@@ -180,9 +180,11 @@ def write_meta_json(payload: Dict[str, object], artifacts_dir: Path) -> None:
 def run_aseprite(executable: str, script_path: Path, params: Dict[str, str], log_path: Path) -> int:
     script_win_path = to_windows_path(str(script_path))
 
-    cmd = [executable, "-b", "--script", script_win_path]
+    # Note: --script-param must come BEFORE --script for Aseprite to parse them
+    cmd = [executable, "-b"]
     for key, value in params.items():
         cmd.extend(["--script-param", f"{key}={value}"])
+    cmd.extend(["--script", script_win_path])
 
     result = subprocess.run(
         cmd,

@@ -85,7 +85,7 @@ local function main()
     error("output_basename parameter is required")
   end
 
-  local sprite = app.createSprite(16, 16, ColorMode.INDEXED)
+  local sprite = Sprite(16, 16, ColorMode.INDEXED)
   sprite:setPalette(make_palette())
 
   local layer = sprite:newLayer()
@@ -110,16 +110,20 @@ local function main()
   local png_path = join_path(output_dir, output_basename .. ".png")
 
   app.command.SaveFile { filename = aseprite_path }
+  
+  -- Export sprite sheet PNG 
+  -- Note: textureFilename is required to actually save the sheet file
   app.command.ExportSpriteSheet {
     ui = false,
     type = SpriteSheetType.HORIZONTAL,
-    sheet = png_path,
+    textureFilename = png_path,
     columns = 5,
     rows = 1,
     borderPadding = 0,
     shapePadding = 0,
     innerPadding = 0,
-    trim = false
+    trim = false,
+    openGenerated = false
   }
 
   print("Sprite placeholder generation complete")
