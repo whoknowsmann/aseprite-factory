@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 REPO_ROOT = Path(__file__).resolve().parent
-ARTIFACTS_DIR = REPO_ROOT / "artifacts"
+ARTIFACTS_DIR = Path("/mnt/c/Users/hound/Pictures/Aseprite Factory")
 LUA_DIR = REPO_ROOT / "lua"
 
 SUPPORTED_TASKS = {"sprite_placeholder", "tileset_placeholder"}
