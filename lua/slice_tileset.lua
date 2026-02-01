@@ -153,6 +153,13 @@ local function main()
     print("Removed " .. dupe_count .. " duplicate tiles")
   end
   
+  -- Save the source palette BEFORE closing
+  local saved_palette = Palette(#source_sprite.palettes[1])
+  for i = 0, #source_sprite.palettes[1] - 1 do
+    saved_palette:setColor(i, source_sprite.palettes[1]:getColor(i))
+  end
+  print("Saved palette with " .. #saved_palette .. " colors")
+  
   -- Close source
   app.command.CloseFile { ui = false }
   
@@ -167,9 +174,8 @@ local function main()
   -- Create tileset sprite
   local tileset_sprite = Sprite(tileset_width, tileset_height, ColorMode.INDEXED)
   
-  -- Copy palette from original (recreate it)
-  local tileset_palette = Palette(palette_size)
-  tileset_sprite:setPalette(tileset_palette)
+  -- Apply the saved palette from the source image
+  tileset_sprite:setPalette(saved_palette)
   
   -- Draw tiles to tileset
   local layer = tileset_sprite.layers[1]
