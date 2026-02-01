@@ -13,7 +13,7 @@ REPO_ROOT = Path(__file__).resolve().parent
 ARTIFACTS_DIR = Path("/mnt/c/Users/hound/Pictures/Aseprite Factory")
 LUA_DIR = REPO_ROOT / "lua"
 
-SUPPORTED_TASKS = {"sprite_placeholder", "tileset_placeholder", "character_base"}
+SUPPORTED_TASKS = {"sprite_placeholder", "tileset_placeholder", "character_base", "process_sprite", "slice_tileset"}
 JOB_ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]+$")
 
 
@@ -197,6 +197,80 @@ class CharacterBaseCommand(BaseCommand):
         }
 
 
+class ProcessSpriteCommand(BaseCommand):
+    @property
+    def lua_script(self) -> Path:
+        return LUA_DIR / "process_sprite.lua"
+
+    def script_params(self) -> Dict[str, str]:
+        params = super().script_params()
+        job_params = self.context.job.get("params", {})
+        
+        # Input file - convert to Windows path if needed
+        input_file = job_params.get("input_file", "")
+        if input_file.startswith("/"):
+            input_file = to_windows_path(input_file)
+        params["input_file"] = input_file
+        
+        # Processing params
+        params["target_width"] = str(job_params.get("target_width", 32))
+        params["target_height"] = str(job_params.get("target_height", 32))
+        params["palette_size"] = str(job_params.get("palette_size", 16))
+        params["gen_walkcycle"] = "true" if job_params.get("gen_walkcycle", False) else "false"
+        
+        return params
+
+    def meta_payload(self) -> Dict[str, object]:
+        job_params = self.context.job.get("params", {})
+        return {
+            "job": self.context.job,
+            "input_file": job_params.get("input_file", ""),
+            "target_size": [
+                job_params.get("target_width", 32),
+                job_params.get("target_height", 32)
+            ],
+            "palette_size": job_params.get("palette_size", 16),
+            "gen_walkcycle": job_params.get("gen_walkcycle", False),
+        }
+
+
+class SliceTilesetCommand(BaseCommand):
+    @property
+    def lua_script(self) -> Path:
+        return LUA_DIR / "slice_tileset.lua"
+
+    def script_params(self) -> Dict[str, str]:
+        params = super().script_params()
+        job_params = self.context.job.get("params", {})
+        
+        # Input file - convert to Windows path if needed
+        input_file = job_params.get("input_file", "")
+        if input_file.startswith("/"):
+            input_file = to_windows_path(input_file)
+        params["input_file"] = input_file
+        
+        # Tile params
+        params["tile_width"] = str(job_params.get("tile_width", 16))
+        params["tile_height"] = str(job_params.get("tile_height", 16))
+        params["palette_size"] = str(job_params.get("palette_size", 32))
+        params["remove_dupes"] = "true" if job_params.get("remove_dupes", True) else "false"
+        
+        return params
+
+    def meta_payload(self) -> Dict[str, object]:
+        job_params = self.context.job.get("params", {})
+        return {
+            "job": self.context.job,
+            "input_file": job_params.get("input_file", ""),
+            "tile_size": [
+                job_params.get("tile_width", 16),
+                job_params.get("tile_height", 16)
+            ],
+            "palette_size": job_params.get("palette_size", 32),
+            "remove_dupes": job_params.get("remove_dupes", True),
+        }
+
+
 def build_command(context: CommandContext) -> BaseCommand:
     task = context.job["task"]
     if task == "sprite_placeholder":
@@ -205,6 +279,10 @@ def build_command(context: CommandContext) -> BaseCommand:
         return TilesetPlaceholderCommand(context)
     if task == "character_base":
         return CharacterBaseCommand(context)
+    if task == "process_sprite":
+        return ProcessSpriteCommand(context)
+    if task == "slice_tileset":
+        return SliceTilesetCommand(context)
     raise JobError(f"Unsupported task: {task}")
 
 

@@ -1,0 +1,12 @@
+{
+  "job_id": "slice_bookshop",
+  "task": "slice_tileset",
+  "output_basename": "bookshop_tiles",
+  "params": {
+    "input_file": "/mnt/c/Users/hound/Pictures/Stable Diffusion Pics/isometric_bookshop.png",
+    "tile_width": 16,
+    "tile_height": 16,
+    "palette_size": 32,
+    "remove_dupes": true
+  }
+}

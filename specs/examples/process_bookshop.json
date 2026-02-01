@@ -1,0 +1,12 @@
+{
+  "job_id": "process_bookshop",
+  "task": "process_sprite",
+  "output_basename": "bookshop_processed",
+  "params": {
+    "input_file": "/mnt/c/Users/hound/Pictures/Stable Diffusion Pics/isometric_bookshop.png",
+    "target_width": 64,
+    "target_height": 64,
+    "palette_size": 32,
+    "gen_walkcycle": false
+  }
+}
